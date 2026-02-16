@@ -1,0 +1,85 @@
+
+name: Build and Publish Reachability Metadata
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      kafka_versions:
+        description: 'Kafka versions to build (comma-separated)'
+        required: false
+        default: '4.1.1,4.0.2'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        reachability-module: [ 'clients-reachability', 'streams-reachability' ]
+        kafka-version: [ '4.1.1', '4.0.2' ]
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm'
+          components: 'native-image'
+          cache: gradle
+
+      - name: Install system build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libz-dev zlib1g-dev
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build ${{ matrix.reachability-module }} with Kafka ${{ matrix.kafka-version }}
+        run: |
+          ./gradlew :${{ matrix.reachability-module }}:build \
+            -PkafkaVersion=${{ matrix.kafka-version }} \
+            --info
+        env:
+          GRAALVM_HOME: ${{ env.JAVA_HOME }}
+
+      - name: Publish ${{ matrix.reachability-module }} with Kafka ${{ matrix.kafka-version }}
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        run: |
+          ./gradlew :${{ matrix.reachability-module }}:publish \
+            -PkafkaVersion=${{ matrix.kafka-version }} \
+            --info
+        env:
+          GRAALVM_HOME: ${{ env.JAVA_HOME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.reachability-module }}-kafka-${{ matrix.kafka-version }}
+          path: ${{ matrix.reachability-module }}/build/libs/
+          retention-days: 7
+
+      - name: Show build results
+        if: always()
+        run: |
+          echo "=== Build Artifacts for ${{ matrix.reachability-module }} ==="
+          find ${{ matrix.reachability-module }}/build/libs -type f -name "*.jar" 2>/dev/null | head -20
