@@ -206,3 +206,39 @@ val metadataJar = tasks.register<Jar>("metadataJar") {
 tasks.named("build") {
     dependsOn(metadataJar)
 }
+
+
+apply(plugin = "maven-publish")
+
+configure<PublishingExtension> {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/${System.getenv("GITHUB_REPOSITORY")}")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
+
+    publications {
+        register<MavenPublication>("gpr") {
+            artifact(metadataJar)
+
+            pom {
+                name.set("clients-reachability")
+                description.set("GraalVM Reachability Metadata for Kafka Clients v$kafkaVersion")
+                url.set("https://github.com/${System.getenv("GITHUB_REPOSITORY")}")
+                licenses {
+                    license {
+                        name.set("Apache License 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+            }
+
+            artifactId = "clients-reachability-kafka${kafkaVersion.replace(".", "")}"
+        }
+    }
+}

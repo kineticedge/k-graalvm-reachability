@@ -55,49 +55,51 @@ subprojects {
     }
 }
 
-subprojects {
-    if (project.name.endsWith("-reachability")) {
-        apply(plugin = "maven-publish")
+//subprojects {
+//    if (project.name.endsWith("-reachability")) {
+//        apply(plugin = "maven-publish")
+//
+//        configure<PublishingExtension> {
+//            repositories {
+//                maven {
+//                    name = "GitHubPackages"
+//                    url = uri("https://maven.pkg.github.com/${System.getenv("GITHUB_REPOSITORY")}")
+//                    credentials {
+//                        username = System.getenv("GITHUB_ACTOR") ?: ""
+//                        password = System.getenv("GITHUB_TOKEN") ?: ""
+//                    }
+//                }
+//            }
+//
+//            publications {
+//                register<MavenPublication>("gpr") {
+//                    from(components["java"])
+//
+//                    val kafkaVersion: String = project.findProperty("kafkaVersion")?.toString()
+//                        ?: (project.properties["kafka_version"]?.toString() ?: "4.1.1")
+//
+//                    // Extract the reachability type from project name
+//                    // e.g., "kafka-clients-reachability" → "clients-reachability"
+//                    val reachabilityType = project.name.replace("-reachability", "").substringAfter("-")
+//                    val baseName = "$reachabilityType-reachability"
+//
+//                    pom {
+//                        name.set(baseName)
+//                        description.set("GraalVM Reachability Metadata for Kafka $reachabilityType v$kafkaVersion")
+//                        url.set("https://github.com/${System.getenv("GITHUB_REPOSITORY")}")
+//                        licenses {
+//                            license {
+//                                name.set("Apache License 2.0")
+//                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+//                            }
+//                        }
+//                    }
+//
+//                    artifactId = "$baseName-kafka${kafkaVersion.replace(".", "")}"
+//                }
+//            }
+//        }
+//    }
 
-        configure<PublishingExtension> {
-            repositories {
-                maven {
-                    name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/${System.getenv("GITHUB_REPOSITORY")}")
-                    credentials {
-                        username = System.getenv("GITHUB_ACTOR") ?: ""
-                        password = System.getenv("GITHUB_TOKEN") ?: ""
-                    }
-                }
-            }
 
-            publications {
-                register<MavenPublication>("gpr") {
-                    from(components["java"])
 
-                    val kafkaVersion: String = project.findProperty("kafkaVersion")?.toString()
-                        ?: (project.properties["kafka_version"]?.toString() ?: "4.1.1")
-
-                    // Extract the reachability type from project name
-                    // e.g., "kafka-clients-reachability" → "clients-reachability"
-                    val reachabilityType = project.name.replace("-reachability", "").substringAfter("-")
-                    val baseName = "$reachabilityType-reachability"
-
-                    pom {
-                        name.set(baseName)
-                        description.set("GraalVM Reachability Metadata for Kafka $reachabilityType v$kafkaVersion")
-                        url.set("https://github.com/${System.getenv("GITHUB_REPOSITORY")}")
-                        licenses {
-                            license {
-                                name.set("Apache License 2.0")
-                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                            }
-                        }
-                    }
-
-                    artifactId = "$baseName-kafka${kafkaVersion.replace(".", "")}"
-                }
-            }
-        }
-    }
-}
