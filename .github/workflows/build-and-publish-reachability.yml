@@ -27,7 +27,7 @@ jobs:
         kafka-version: [ '4.1.1' ]
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -70,7 +70,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts to workflow run
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -83,3 +83,14 @@ jobs:
         run: |
           echo "=== Build Artifacts for ${{ matrix.reachability-module }} ==="
           find ${{ matrix.reachability-module }}/build/libs -type f -name "*.jar" 2>/dev/null | head -20
+
+      - name: Publish artifacts to GitHub Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.reachability-module }}/build/libs/*.jar
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
