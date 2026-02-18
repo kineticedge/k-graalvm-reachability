@@ -17,9 +17,12 @@ allprojects {
     }
 }
 
+
+val projectVersion: String = (project.findProperty("version")?.toString() ?: "unspecified").removePrefix("v")
+
 subprojects {
 
-    version = "1.0"
+    version = projectVersion
 
     apply(plugin = "java")
 

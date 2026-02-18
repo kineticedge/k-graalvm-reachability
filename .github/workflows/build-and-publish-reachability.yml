@@ -50,10 +50,26 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+
+      - name: Extract version from tag or branch
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            # Tag: strip 'v' prefix
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            # Branch: use branch name + commit short hash
+            BRANCH=${GITHUB_REF#refs/heads/}
+            COMMIT=${GITHUB_SHA:0:7}
+            VERSION="${BRANCH}-${COMMIT}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build ${{ matrix.reachability-module }} with Kafka ${{ matrix.kafka-version }}
         run: |
           ./gradlew :${{ matrix.reachability-module }}:build \
             -PkafkaVersion=${{ matrix.kafka-version }} \
+            -Pversion=${{ steps.version.outputs.version }} \
             --info
         env:
           GRAALVM_HOME: ${{ env.JAVA_HOME }}
@@ -63,6 +79,7 @@ jobs:
         run: |
           ./gradlew :${{ matrix.reachability-module }}:publish \
             -PkafkaVersion=${{ matrix.kafka-version }} \
+            -Pversion=${{ steps.version.outputs.version }} \
             --info
         env:
           GRAALVM_HOME: ${{ env.JAVA_HOME }}
