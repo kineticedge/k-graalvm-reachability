@@ -17,17 +17,15 @@ repositories {
     mavenCentral()
 }
 
-
-val kafkaVersion: String = project.findProperty("kafkaVersion")?.toString()
-    ?: (project.properties["kafka_version"]?.toString() ?: "4.1.1")
+val kafka_clients_version: String by project
 
 dependencies {
 
     implementation(project(":metrics-reporter"))
     implementation(project(":clusters"))
 
-    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
-    implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafka_clients_version")
+    implementation("org.apache.kafka:kafka-streams:$kafka_clients_version")
 
     implementation(platform("org.testcontainers:testcontainers-bom:2.0.3"))
     implementation("org.testcontainers:testcontainers-kafka")
