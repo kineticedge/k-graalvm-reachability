@@ -18,15 +18,14 @@ repositories {
 }
 
 
-val kafkaVersion: String = project.findProperty("kafkaVersion")?.toString()
-    ?: (project.properties["kafka_version"]?.toString() ?: "4.1.1")
+val kafka_clients_version: String by project
 
 dependencies {
 
     implementation(project(":metrics-reporter"))
     implementation(project(":clusters"))
 
-    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-clients:$kafka_clients_version")
 
     implementation(platform("org.testcontainers:testcontainers-bom:2.0.3"))
     implementation("org.testcontainers:testcontainers-kafka")
@@ -228,7 +227,7 @@ configure<PublishingExtension> {
 
             pom {
                 name.set("clients-reachability")
-                description.set("GraalVM Reachability Metadata for Kafka Clients v$kafkaVersion")
+                description.set("GraalVM Reachability Metadata for Kafka Clients v$kafka_clients_version")
                 url.set("https://github.com/${System.getenv("GITHUB_REPOSITORY")}")
                 licenses {
                     license {
@@ -238,7 +237,7 @@ configure<PublishingExtension> {
                 }
             }
 
-            artifactId = "clients-reachability-kafka${kafkaVersion.replace(".", "")}"
+            artifactId = "clients-reachability-kafka${kafka_clients_version.replace(".", "")}"
         }
     }
 }

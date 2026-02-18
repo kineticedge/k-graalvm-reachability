@@ -3,7 +3,7 @@ import org.gradle.api.JavaVersion.VERSION_25
 import org.gradle.jvm.tasks.Jar
 
 val logback_version: String by project
-val kafka_version: String by project
+val kafka_clients_version: String by project
 val slf4j_version: String by project
 
 val junit_pioneer_version: String by project
@@ -31,7 +31,7 @@ subprojects {
 
     // Dependencies
     dependencies {
-        add("implementation", "org.apache.kafka:kafka-clients:$kafka_version")
+        add("implementation", "org.apache.kafka:kafka-clients:$kafka_clients_version")
         add("implementation", "org.slf4j:slf4j-api:$slf4j_version")
         add("implementation", "ch.qos.logback:logback-classic:$logback_version")
     }
