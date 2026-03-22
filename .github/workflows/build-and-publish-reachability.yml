@@ -19,16 +19,14 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-latest' || 'ubuntu-24.04-arm64' }}
+    runs-on: ubuntu-latest
 
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       matrix:
-        reachability-module: [ 'kafka-clients-reachability' ]
+        reachability-module: [ 'kafka-clients-reachability', 'kafka-streams-reachability' ]
         kafka-version: [ '4.1.1', '4.2.0' ]
-        platform: [ 'linux/amd64' ]
-        # ARM builds require GitHub Team/Enterprise plan for arm64 runners
-        # platform: [ 'linux/amd64', 'linux/aarch64' ]
+        platform: [ 'linux/amd64', 'linux/aarch64' ]
 
     permissions:
       contents: write
@@ -37,6 +35,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up QEMU for multi-arch builds
+        if: matrix.platform == 'linux/aarch64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
 
       - name: Set up GraalVM JDK
         uses: graalvm/setup-graalvm@v1
