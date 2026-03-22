@@ -26,7 +26,9 @@ jobs:
       matrix:
         reachability-module: [ 'kafka-clients-reachability' ]
         kafka-version: [ '4.1.1', '4.2.0' ]
-        platform: [ 'linux/amd64', 'linux/aarch64' ]
+        platform: [ 'linux/amd64' ]
+        # ARM builds require GitHub Team/Enterprise plan for arm64 runners
+        # platform: [ 'linux/amd64', 'linux/aarch64' ]
 
     permissions:
       contents: write

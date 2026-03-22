@@ -18,6 +18,7 @@ repositories {
 }
 
 val kafka_clients_version: String by project
+val buildArch: String? by project
 
 dependencies {
 
@@ -233,7 +234,10 @@ configure<PublishingExtension> {
             }
 
             artifactId = "streams-reachability-kafka${kafka_clients_version.replace(".", "")}"
-            version = "${project.version}-kafka${kafka_clients_version.replace(".", "")}"
+            val baseVersion = "${project.version}-kafka${kafka_clients_version.replace(".", "")}" +
+                             (buildArch?.let { "-$it" } ?: "")
+            // Add SNAPSHOT suffix for branch builds to allow republishing
+            version = if (project.version.toString().contains("-")) "$baseVersion-SNAPSHOT" else baseVersion
         }
     }
 }
