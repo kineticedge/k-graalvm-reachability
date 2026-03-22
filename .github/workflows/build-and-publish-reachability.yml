@@ -15,7 +15,7 @@ on:
       kafka_versions:
         description: 'Kafka versions to build (comma-separated)'
         required: false
-        default: '4.1.1'
+        default: '4.1.1,4.2.0'
 
 jobs:
   build-and-publish:
@@ -23,8 +23,8 @@ jobs:
 
     strategy:
       matrix:
-        reachability-module: [ 'kafka-clients-reachability' ]
-        kafka-version: [ '4.1.1' ]
+        reachability-module: [ 'kafka-clients-reachability', 'kafka-streams-reachability' ]
+        kafka-version: [ '4.1.1', '4.2.0' ]
 
     permissions:
       contents: write
