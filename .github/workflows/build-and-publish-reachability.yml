@@ -22,6 +22,7 @@ jobs:
     runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-latest' || 'ubuntu-24.04-arm64' }}
 
     strategy:
+      max-parallel: 1
       matrix:
         reachability-module: [ 'kafka-clients-reachability' ]
         kafka-version: [ '4.1.1', '4.2.0' ]
