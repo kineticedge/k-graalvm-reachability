@@ -171,7 +171,7 @@ val prepareMetadataForJar = tasks.register("prepareMetadataForJar") {
         val sourceFile = metadataDir.get().asFile.resolve("reachability-metadata.json")
         if (sourceFile.exists()) {
             val jarReadyDir = File(metadataDir.get().asFile.parentFile, "jar-metadata").apply { mkdirs() }
-            val resourcesDir = File(jarReadyDir, "META-INF/resources/io/kineticedge/clients-reachability").apply { mkdirs() }
+            val resourcesDir = File(jarReadyDir, "META-INF/resources/io/kineticedge/streams-reachability").apply { mkdirs() }
             val destFile = File(resourcesDir, "reachability-metadata.json")
 
             sourceFile.copyTo(destFile, overwrite = true)
@@ -233,6 +233,7 @@ configure<PublishingExtension> {
             }
 
             artifactId = "streams-reachability-kafka${kafka_clients_version.replace(".", "")}"
+            version = "${project.version}-kafka${kafka_clients_version.replace(".", "")}"
         }
     }
 }

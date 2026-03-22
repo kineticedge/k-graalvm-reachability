@@ -238,6 +238,7 @@ configure<PublishingExtension> {
             }
 
             artifactId = "clients-reachability-kafka${kafka_clients_version.replace(".", "")}"
+            version = "${project.version}-kafka${kafka_clients_version.replace(".", "")}"
         }
     }
 }
