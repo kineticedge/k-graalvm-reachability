@@ -22,11 +22,12 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      max-parallel: 2
       matrix:
         reachability-module: [ 'kafka-clients-reachability', 'kafka-streams-reachability' ]
         kafka-version: [ '4.1.1', '4.2.0' ]
-        platform: [ 'linux/amd64', 'linux/aarch64' ]
+        platform: [ 'linux/amd64' ]
+        # TODO: ARM64 builds require native ARM runners for accurate metadata
+        # QEMU emulation captures wrong architecture (x86-64 libs instead of aarch64)
 
     permissions:
       contents: write
