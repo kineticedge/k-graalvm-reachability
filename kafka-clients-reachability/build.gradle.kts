@@ -19,6 +19,7 @@ repositories {
 
 
 val kafka_clients_version: String by project
+val buildArch: String? by project
 
 dependencies {
 
@@ -238,7 +239,8 @@ configure<PublishingExtension> {
             }
 
             artifactId = "clients-reachability-kafka${kafka_clients_version.replace(".", "")}"
-            version = "${project.version}-kafka${kafka_clients_version.replace(".", "")}"
+            version = "${project.version}-kafka${kafka_clients_version.replace(".", "")}" +
+                      (buildArch?.let { "-$it" } ?: "")
         }
     }
 }
