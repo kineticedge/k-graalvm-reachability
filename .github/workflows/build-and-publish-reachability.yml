@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        reachability-module: [ 'kafka-clients-reachability', 'kafka-streams-reachability' ]
+        reachability-module: [ 'kafka-clients-reachability' ]
         kafka-version: [ '4.1.1', '4.2.0' ]
 
     permissions:
